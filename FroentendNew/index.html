@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Invisible Voting Booth MVP (Frontend Only)</title>
+  <style>
+    :root {
+      --bg: #050816;
+      --panel: #0f172a;
+      --accent: #22c55e;
+      --accent-soft: rgba(34, 197, 94, 0.15);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger: #ef4444;
+      --border: #1f2937;
+      --radius: 10px;
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top, #111827, #020617 60%);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 12px;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 1080px;
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.98));
+      border-radius: 24px;
+      padding: 24px 28px 26px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(148, 163, 184, 0.18);
+      backdrop-filter: blur(18px);
+    }
+
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #22c55e, #22c55e33 40%, transparent 65%);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .brand-text-title {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .brand-text-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .pill {
+      font-size: 11px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: var(--muted);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pill span.dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: #22c55e;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-width: 120px;
+      border-radius: 999px;
+      padding: 10px 10px;
+      font-size: 13px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 42, 0.96);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.16s ease-out;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      border-color: #22c55e;
+      color: white;
+      box-shadow: 0 10px 35px rgba(34, 197, 94, 0.4);
+    }
+
+    .tab-btn span.icon {
+      font-size: 15px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 880px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.12), rgba(15, 23, 42, 0.98));
+      border-radius: var(--radius);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 16px 18px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .panel::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at top left, rgba(34, 197, 94, 0.18), transparent 55%);
+      opacity: 0.75;
+      pointer-events: none;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .panel-title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .panel-sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .badge {
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.45);
+      color: var(--muted);
+    }
+
+    .field-group {
+      position: relative;
+      z-index: 1;
+      margin-bottom: 10px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+
+    label {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .hint {
+      font-size: 11px;
+      color: #6ee7b7;
+    }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.96);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      padding: 8px 9px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.16s, box-shadow 0.16s;
+    }
+
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.55);
+    }
+
+    textarea {
+      min-height: 56px;
+      resize: vertical;
+    }
+
+    .row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .row > * {
+      flex: 1;
+    }
+
+    .options-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 4px;
+      font-size: 11px;
+    }
+
+    .chip {
+      padding: 3px 7px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.7);
+      color: var(--muted);
+      background: rgba(15, 23, 42, 0.96);
+    }
+
+    .btn {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      border-radius: 999px;
+      border: none;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      color: white;
+      box-shadow: 0 10px 30px rgba(34, 197, 94, 0.45);
+      transition: transform 0.12s ease-out, box-shadow 0.12s ease-out, filter 0.12s ease-out;
+    }
+
+    .btn:active {
+      transform: translateY(1px) scale(0.99);
+      box-shadow: 0 6px 18px rgba(34, 197, 94, 0.5);
+      filter: brightness(0.94);
+    }
+
+    .btn.secondary {
+      background: rgba(15, 23, 42, 0.98);
+      color: var(--muted);
+      box-shadow: none;
+      border: 1px solid var(--border);
+    }
+
+    .status {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      padding: 7px 9px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(55, 65, 81, 0.9);
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .status strong {
+      color: #bbf7d0;
+    }
+
+    .status .tag {
+      padding: 2px 6px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      font-size: 10px;
+    }
+
+    .log-panel {
+      background: radial-gradient(circle at top right, rgba(37, 99, 235, 0.16), rgba(15, 23, 42, 0.98));
+      border-radius: var(--radius);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+      padding: 14px 15px;
+      font-size: 11px;
+      height: 260px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+
+    .log-header span {
+      color: var(--muted);
+    }
+
+    .log-scroll {
+      flex: 1;
+      margin-top: 4px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid rgba(31, 41, 55, 0.85);
+      overflow-y: auto;
+      scrollbar-width: thin;
+    }
+
+    .log-entry {
+      margin-bottom: 4px;
+      padding-bottom: 4px;
+      border-bottom: 1px dashed rgba(55, 65, 81, 0.9);
+    }
+
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+
+    .log-tag {
+      font-size: 10px;
+      color: #a5b4fc;
+    }
+
+    .log-body {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .log-meta {
+      font-size: 10px;
+      color: #6b7280;
+    }
+
+    .pill-small {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--muted);
+    }
+
+    .danger {
+      color: var(--danger);
+    }
+
+    .result-list {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .result-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 2px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-icon">ZK</div>
+      <div>
+        <div class="brand-text-title">Invisible Voting Booth</div>
+        <div class="brand-text-sub">Private voting · Cardano · Midnight (frontend demo)</div>
+      </div>
+    </div>
+    <div>
+      <div class="pill">
+        <span class="dot"></span>
+        <span>Identity stays invisible · browser‑only MVP</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="admin">
+      <span class="icon">🛠️</span> Admin
+    </button>
+    <button class="tab-btn" data-tab="voter">
+      <span class="icon">🗳️</span> Voter
+    </button>
+    <button class="tab-btn" data-tab="tally">
+      <span class="icon">📊</span> Tally
+    </button>
+  </div>
+
+  <div id="tab-admin" class="tab-page">
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Create poll</div>
+            <div class="panel-sub">Simulated metadata → IPFS → Midnight Merkle root</div>
+          </div>
+          <span class="badge">Step 1 · Admin</span>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="poll-title">Poll title</label>
+            <span class="hint">e.g. “IBW 2025 – President”</span>
+          </div>
+          <input id="poll-title" type="text" placeholder="Enter poll title" />
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="poll-desc">Poll description</label>
+          </div>
+          <textarea id="poll-desc" placeholder="Short description visible to voters"></textarea>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="poll-options">Options (comma separated)</label>
+            <span class="hint">e.g. Alice,Bob,NOTA</span>
+          </div>
+          <input id="poll-options" type="text" placeholder="Alice,Bob,NOTA" />
+          <div id="options-preview" class="options-list"></div>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="eligibility-hash">Eligibility commitment</label>
+            <span class="hint">Mock Merkle root / address set hash</span>
+          </div>
+          <input id="eligibility-hash" type="text"
+                 placeholder="Will be auto‑generated if left empty" />
+        </div>
+
+        <button id="btn-create-poll" class="btn">
+          <span>Publish poll (mock IPFS + Midnight)</span>
+        </button>
+
+        <div id="admin-status" class="status" style="display:none;"></div>
+      </section>
+
+      <aside class="log-panel">
+        <div class="log-header">
+          <span>System log</span>
+          <button id="btn-clear-log" class="pill-small">Clear</button>
+        </div>
+        <div id="log-output" class="log-scroll"></div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="tab-voter" class="tab-page" style="display:none;">
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Anonymous voting</div>
+            <div class="panel-sub">Wallet connect, eligibility check, local ZK proof + encryption</div>
+          </div>
+          <span class="badge">Step 2 · Voter</span>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label>Wallet</label>
+            <span class="hint">Simulated Nami / Yoroi connect</span>
+          </div>
+          <div class="row">
+            <button id="btn-connect-wallet" class="btn secondary">Connect Cardano wallet</button>
+            <span id="wallet-status" class="status" style="margin-top:0;">
+              <span><strong>Disconnected</strong></span>
+              <span class="tag">no address visible</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="voter-secret">Eligibility secret</label>
+            <span class="hint">Represents your place in the eligibility set</span>
+          </div>
+          <input id="voter-secret" type="text"
+                 placeholder="Enter secret code (mock leaf of Merkle tree)" />
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="voter-poll-select">Select poll</label>
+            <span class="hint">Loaded from local mock “contract”</span>
+          </div>
+          <select id="voter-poll-select"></select>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="voter-option-select">Choose option</label>
+            <span class="hint">Your choice stays encrypted in storage</span>
+          </div>
+          <select id="voter-option-select"></select>
+        </div>
+
+        <button id="btn-cast-vote" class="btn">
+          <span>Generate ZK proof + submit encrypted vote</span>
+        </button>
+
+        <div id="voter-status" class="status" style="display:none;"></div>
+      </section>
+
+      <aside class="log-panel">
+        <div class="log-header">
+          <span>Private state (browser only)</span>
+          <span class="pill-small">No identity, only ciphertext + commitments</span>
+        </div>
+        <div id="vote-debug" class="log-scroll">
+          <div class="log-entry">
+            <div class="log-body">
+              When you vote, this panel shows only:
+              <br>- poll id
+              <br>- encrypted vote blob
+              <br>- fake ZK proof hash
+            </div>
+            <div class="log-meta">
+              Raw identity, address and clear-text choice are never stored.
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="tab-tally" class="tab-page" style="display:none;">
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <div class="panel-title">Verifiable tally</div>
+            <div class="panel-sub">Decrypt locally and prove that results match encrypted votes</div>
+          </div>
+          <span class="badge">Step 3 · Admin</span>
+        </div>
+
+        <div class="field-group">
+          <div class="label-row">
+            <label for="tally-poll-select">Select poll to tally</label>
+          </div>
+          <select id="tally-poll-select"></select>
+        </div>
+
+        <button id="btn-run-tally" class="btn">
+          <span>Run tally + generate mock ZK result proof</span>
+        </button>
+
+        <div id="tally-status" class="status" style="display:none;"></div>
+
+        <div id="tally-results" class="result-list" style="display:none;"></div>
+      </section>
+
+      <aside class="log-panel">
+        <div class="log-header">
+          <span>Result proof (mock)</span>
+          <span class="pill-small">Frontend-only SNARK placeholder</span>
+        </div>
+        <div id="tally-log" class="log-scroll"></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<script>
+  const state = {
+    polls: [],
+    votes: [], // {pollId, encrypted, proofHash}
+    walletConnected: false,
+    walletAlias: null, // “anonymous wallet #1”
+  };
+
+  const $ = (id) => document.getElementById(id);
+
+  function log(tag, message, meta) {
+    const logOutput = $("log-output");
+    const div = document.createElement("div");
+    div.className = "log-entry";
+    div.innerHTML =
+      '<div class="log-tag">' + tag + "</div>" +
+      '<div class="log-body">' + message + "</div>" +
+      (meta ? '<div class="log-meta">' + meta + "</div>" : "");
+    logOutput.appendChild(div);
+    logOutput.scrollTop = logOutput.scrollHeight;
+  }
+
+  function voteDebugEntry(vote) {
+    const panel = $("vote-debug");
+    const div = document.createElement("div");
+    div.className = "log-entry";
+    div.innerHTML =
+      '<div class="log-body">' +
+      "pollId: <strong>" + vote.pollId + "</strong><br>" +
+      "encrypted: <span class='danger'>" + vote.encrypted.slice(0, 18) + "...</span><br>" +
+      "proofCommitment: " + vote.proofHash +
+      "</div>" +
+      '<div class="log-meta">This storage never sees the raw choice or identity.</div>';
+    panel.appendChild(div);
+    panel.scrollTop = panel.scrollHeight;
+  }
+
+  function tallyLogEntry(poll, tally, proofCommitment) {
+    const panel = $("tally-log");
+    const div = document.createElement("div");
+    const lines = Object.entries(tally).map(
+      ([opt, count]) => opt + ": " + count + " vote(s)"
+    );
+    div.className = "log-entry";
+    div.innerHTML =
+      '<div class="log-body">' +
+      "poll: <strong>" + poll.title + "</strong><br>" +
+      lines.join("<br>") +
+      "</div>" +
+      '<div class="log-meta">zkTallyProof: ' + proofCommitment + "</div>";
+    panel.appendChild(div);
+    panel.scrollTop = panel.scrollHeight;
+  }
+
+  function randomHash(prefix) {
+    return prefix + "_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  function saveState() {
+    localStorage.setItem("ivb_polls", JSON.stringify(state.polls));
+    localStorage.setItem("ivb_votes", JSON.stringify(state.votes));
+  }
+
+  function loadState() {
+    try {
+      const polls = JSON.parse(localStorage.getItem("ivb_polls") || "[]");
+      const votes = JSON.parse(localStorage.getItem("ivb_votes") || "[]");
+      state.polls = polls;
+      state.votes = votes;
+    } catch (e) {
+      state.polls = [];
+      state.votes = [];
+    }
+  }
+
+  function refreshPollSelects() {
+    const pollSelects = ["voter-poll-select", "tally-poll-select"];
+    pollSelects.forEach((id) => {
+      const sel = $(id);
+      sel.innerHTML = "";
+      if (state.polls.length === 0) {
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No polls yet";
+        sel.appendChild(opt);
+        return;
+      }
+      state.polls.forEach((p) => {
+        const opt = document.createElement("option");
+        opt.value = p.id;
+        opt.textContent = p.title;
+        sel.appendChild(opt);
+      });
+    });
+    updateVoterOptions();
+  }
+
+  function updateOptionsPreview() {
+    const val = $("poll-options").value;
+    const preview = $("options-preview");
+    preview.innerHTML = "";
+    const arr = val.split(",").map((x) => x.trim()).filter(Boolean);
+    arr.forEach((opt) => {
+      const span = document.createElement("span");
+      span.className = "chip";
+      span.textContent = opt;
+      preview.appendChild(span);
+    });
+  }
+
+  function updateVoterOptions() {
+    const pollId = $("voter-poll-select").value;
+    const sel = $("voter-option-select");
+    sel.innerHTML = "";
+    if (!pollId) {
+      const opt = document.createElement("option");
+      opt.value = "";
+      opt.textContent = "Select a poll first";
+      sel.appendChild(opt);
+      return;
+    }
+    const poll = state.polls.find((p) => p.id === pollId);
+    if (!poll) return;
+    poll.options.forEach((opt) => {
+      const o = document.createElement("option");
+      o.value = opt;
+      o.textContent = opt;
+      sel.appendChild(o);
+    });
+  }
+
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const tab = btn.dataset.tab;
+      document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      document.querySelectorAll(".tab-page").forEach((page) => (page.style.display = "none"));
+      $("tab-" + tab).style.display = "block";
+    });
+  });
+
+  $("btn-clear-log").addEventListener("click", () => {
+    $("log-output").innerHTML = "";
+  });
+
+  $("poll-options").addEventListener("input", updateOptionsPreview);
+
+  $("btn-create-poll").addEventListener("click", () => {
+    const title = $("poll-title").value.trim();
+    const desc = $("poll-desc").value.trim();
+    const options = $("poll-options").value
+      .split(",")
+      .map((x) => x.trim())
+      .filter(Boolean);
+
+    const status = $("admin-status");
+
+    if (!title || options.length < 2) {
+      status.style.display = "flex";
+      status.innerHTML =
+        "<span><strong>Error:</strong> title + at least 2 options required.</span>" +
+        '<span class="tag">validation</span>';
+      return;
+    }
+
+    let eligibility = $("eligibility-hash").value.trim();
+    if (!eligibility) {
+      eligibility = randomHash("merkleRoot");
+      $("eligibility-hash").value = eligibility;
+    }
+
+    const pollId = randomHash("poll");
+    const ipfsCid = randomHash("ipfsCID");
+
+    const poll = {
+      id: pollId,
+      title,
+      desc,
+      options,
+      eligibilityRoot: eligibility,
+      ipfsCid,
+      createdAt: Date.now(),
+    };
+    state.polls.push(poll);
+    saveState();
+    refreshPollSelects();
+
+    status.style.display = "flex";
+    status.innerHTML =
+      "<span><strong>Poll created:</strong> " +
+      title +
+      "<br>IPFS (mock) CID: " +
+      ipfsCid +
+      "<br>Eligibility root: " +
+      eligibility +
+      "</span>" +
+      '<span class="tag">midnight_contract_published (simulated)</span>';
+
+    log(
+      "POLL_CREATED",
+      "Poll '" + title + "' stored in browser as if deployed to Midnight.",
+      "pollId=" +
+      pollId +
+      " · ipfsCid=" +
+      ipfsCid +
+      " · eligibilityRoot=" +
+      eligibility
+    );
+  });
+
+  $("btn-connect-wallet").addEventListener("click", () => {
+    if (!state.walletConnected) {
+      state.walletConnected = true;
+      state.walletAlias = "anonymous-wallet-" + Math.random().toString(36).slice(2, 7);
+    } else {
+      state.walletConnected = false;
+      state.walletAlias = null;
+    }
+    const el = $("wallet-status");
+    el.style.display = "flex";
+    if (state.walletConnected) {
+      el.innerHTML =
+        "<span><strong>Connected</strong> (alias only: " +
+        state.walletAlias +
+        ")</span>" +
+        '<span class="tag">address hidden</span>';
+      log(
+        "WALLET_CONNECTED (mock)",
+        "User connected via simulated Cardano wallet API.",
+        "alias=" + state.walletAlias
+      );
+    } else {
+      el.innerHTML =
+        "<span><strong>Disconnected</strong></span>" +
+        '<span class="tag">no session</span>';
+      log("WALLET_DISCONNECTED", "User disconnected wallet session.");
+    }
+  });
+
+  $("voter-poll-select").addEventListener("change", updateVoterOptions);
+
+  $("btn-cast-vote").addEventListener("click", () => {
+    const status = $("voter-status");
+    if (!state.walletConnected) {
+      status.style.display = "flex";
+      status.innerHTML =
+        "<span><strong>Error:</strong> connect a wallet first.</span>" +
+        '<span class="tag">wallet_required</span>';
+      return;
+    }
+
+    const secret = $("voter-secret").value.trim();
+    if (!secret) {
+      status.style.display = "flex";
+      status.innerHTML =
+        "<span><strong>Error:</strong> eligibility secret is required.</span>" +
+        '<span class="tag">eligibility_failed</span>';
+      return;
+    }
+
+    const pollId = $("voter-poll-select").value;
+    const option = $("voter-option-select").value;
+    if (!pollId || !option) {
+      status.style.display = "flex";
+      status.innerHTML =
+        "<span><strong>Error:</strong> select poll + option.</span>" +
+        '<span class="tag">invalid_input</span>';
+      return;
+    }
+
+    // Simulated eligibility check + ZK proof generation
+    const eligibilityOk = secret.length >= 4;
+    if (!eligibilityOk) {
+      status.style.display = "flex";
+      status.innerHTML =
+        "<span><strong>Eligibility refused:</strong> secret too short.</span>" +
+        '<span class="tag">zk_fail (mock)</span>';
+      log(
+        "ELIGIBILITY_REJECTED (mock)",
+        "User failed mock Midnight eligibility circuit.",
+        "secret_length=" + secret.length
+      );
+      return;
+    }
+
+    const encoded = JSON.stringify({
+      pollId,
+      choice: option,
+      salt: randomHash("salt"),
+      voterAlias: state.walletAlias,
+    });
+
+    const enc = btoa(unescape(encodeURIComponent(encoded)));
+    const proofHash = randomHash("zkProof");
+
+    const voteRecord = {
+      pollId,
+      encrypted: enc,
+      proofHash,
+      createdAt: Date.now(),
+    };
+    state.votes.push(voteRecord);
+    saveState();
+
+    status.style.display = "flex";
+    status.innerHTML =
+      "<span><strong>Vote submitted:</strong> encrypted blob stored with mock ZK proof.</span>" +
+      '<span class="tag">on_chain_tx (simulated)</span>';
+
+    log(
+      "VOTE_SUBMITTED (mock)",
+      "Encrypted vote dispatched to Midnight contract (simulated).",
+      "pollId=" + pollId + " · proofCommitment=" + proofHash
+    );
+    voteDebugEntry(voteRecord);
+  });
+
+  $("btn-run-tally").addEventListener("click", () => {
+    const pollId = $("tally-poll-select").value;
+    const status = $("tally-status");
+    const resultsBox = $("tally-results");
+
+    if (!pollId) {
+      status.style.display = "flex";
+      status.innerHTML =
+        "<span><strong>Error:</strong> select a poll.</span>" +
+        '<span class="tag">missing_poll</span>';
+      resultsBox.style.display = "none";
+      return;
+    }
+
+    const poll = state.polls.find((p) => p.id === pollId);
+    if (!poll) return;
+
+    const votes = state.votes.filter((v) => v.pollId === pollId);
+    const tally = {};
+    poll.options.forEach((o) => (tally[o] = 0));
+
+    votes.forEach((v) => {
+      try {
+        const decoded = decodeURIComponent(escape(atob(v.encrypted)));
+        const payload = JSON.parse(decoded);
+        if (payload.choice && tally[payload.choice] !== undefined) {
+          tally[payload.choice] += 1;
+        }
+      } catch (e) {
+        console.warn("Failed to decrypt vote", e);
+      }
+    });
+
+    const proofCommitment = randomHash("zkTallyProof");
+    status.style.display = "flex";
+    status.innerHTML =
+      "<span><strong>Tally complete:</strong> " +
+      votes.length +
+      " encrypted votes consumed.</span>" +
+      '<span class="tag">zk_tally (mock)</span>';
+
+    resultsBox.innerHTML = "";
+    Object.entries(tally).forEach(([opt, count]) => {
+      const div = document.createElement("div");
+      div.className = "result-item";
+      div.innerHTML =
+        "<span>" + opt + "</span><span>" + count + " vote(s)</span>";
+      resultsBox.appendChild(div);
+    });
+    const proofDiv = document.createElement("div");
+    proofDiv.className = "result-item";
+    proofDiv.innerHTML =
+      "<span>Proof commitment</span><span>" + proofCommitment + "</span>";
+    resultsBox.appendChild(proofDiv);
+
+    resultsBox.style.display = "block";
+    tallyLogEntry(poll, tally, proofCommitment);
+  });
+
+  loadState();
+  refreshPollSelects();
+  updateOptionsPreview();
+</script>
+</body>
+</html>
