@@ -1,0 +1,20 @@
+{
+  "votes": [
+    "nullifier_v1_A",
+    "nullifier_v2_B"
+  ],
+  "results": {
+    "candidateA": 1,
+    "candidateB": 1
+  },
+  "totalVotes": 2,
+  "timestamps": [
+    1764478397416,
+    1764478402415
+  ],
+  "voterAgeGroups": {
+    "18-25": 1,
+    "26-35": 1,
+    "36+": 0
+  }
+}

@@ -1,0 +1,5 @@
+### Aggregated stats (result, demographics, avg time, etc.)
+GET http://localhost:3001/stats
+
+### Raw DB (all nullifiers + internal fields)
+GET http://localhost:3001/stats/raw

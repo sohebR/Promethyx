@@ -1,0 +1,35 @@
+### Voter 1: 21 years
+POST http://localhost:3001/eligibility
+Content-Type: application/json
+
+{
+  "age": 21,
+  "voterId": 111122223333
+}
+
+### Voter 2: 29 years
+POST http://localhost:3001/eligibility
+Content-Type: application/json
+
+{
+  "age": 29,
+  "voterId": 222233334444
+}
+
+### Voter 3: 37 years
+POST http://localhost:3001/eligibility
+Content-Type: application/json
+
+{
+  "age": 37,
+  "voterId": 333344445555
+}
+
+### Voter 4: 52 years
+POST http://localhost:3001/eligibility
+Content-Type: application/json
+
+{
+  "age": 52,
+  "voterId": 444455556666
+}

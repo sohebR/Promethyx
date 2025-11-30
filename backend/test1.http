@@ -1,0 +1,35 @@
+### Proof for Voter 1 → Candidate A
+POST http://localhost:3001/vote
+Content-Type: application/json
+
+{
+  "eligible": true,
+  "vote": 0
+}
+
+### Proof for Voter 2 → Candidate B
+POST http://localhost:3001/vote
+Content-Type: application/json
+
+{
+  "eligible": true,
+  "vote": 1
+}
+
+### Proof for Voter 3 → Candidate B
+POST http://localhost:3001/vote
+Content-Type: application/json
+
+{
+  "eligible": true,
+  "vote": 1
+}
+
+### Proof for Voter 4 → Candidate A
+POST http://localhost:3001/vote
+Content-Type: application/json
+
+{
+  "eligible": true,
+  "vote": 0
+}

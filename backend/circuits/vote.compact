@@ -1,0 +1,18 @@
+use dep::std;
+
+fn main(
+    // Private inputs
+    eligible: bool,
+    vote: u1,                // 0 or 1 (Candidate A or B)
+    anon_token: [u8; 32],    // Random anonymity token
+    // Public outputs
+) -> pub ([u8; 32], u1) {
+    assert(eligible == true);
+    assert(vote <= 1u1);
+    
+    // Nullifier = hash(token) prevents double-voting
+    let nullifier = sha256(anon_token);
+    
+    // Public: nullifier + vote_validity (hides choice)
+    (nullifier, vote)
+}

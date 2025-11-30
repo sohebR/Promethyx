@@ -1,0 +1,17 @@
+use dep::std;
+
+fn main(
+    // Private inputs
+    age: u8,
+    voter_id: u64,           // 12-digit voter ID
+    // Public outputs
+) -> pub bool {
+    // Rule 1: Must be 18+ years
+    assert(age >= 18u8);
+    
+    // Rule 2: Valid voter ID format (100000000000+)
+    assert(voter_id >= 100000000000u64);
+    
+    // Output: Eligible to vote
+    true
+}

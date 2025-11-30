@@ -1,0 +1,43 @@
+### Submit Voter 1 (21y) → Candidate A
+POST http://localhost:3001/submit-vote
+Content-Type: application/json
+
+{
+  "proof": { "demo": true },
+  "publicSignals": ["nullifier_v1_A", "0"],
+  "voterId": 111124223333,
+  "age": 21
+}
+
+### Submit Voter 2 (29y) → Candidate B
+POST http://localhost:3001/submit-vote
+Content-Type: application/json
+
+{
+  "proof": { "demo": true },
+  "publicSignals": ["nullifier_v2_B", "1"],
+  "voterId": 222233334444,
+  "age": 29
+}
+
+### Submit Voter 3 (37y) → Candidate B
+POST http://localhost:3001/submit-vote
+Content-Type: application/json
+
+{
+  "proof": { "demo": true },
+  "publicSignals": ["nullifier_v3_B", "1"],
+  "voterId": 333344445555,
+  "age": 37
+}
+
+### Submit Voter 4 (52y) → Candidate A
+POST http://localhost:3001/submit-vote
+Content-Type: application/json
+
+{
+  "proof": { "demo": true },
+  "publicSignals": ["nullifier_v4_A", "0"],
+  "voterId": 444455556666,
+  "age": 52
+}
